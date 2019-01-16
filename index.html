@@ -1,0 +1,72 @@
+<html>
+<head>
+<title>BlueJeans Aggregator</title>
+<script src='jquery.min.js' type="text/javascript"></script>
+<script src='bootstrap/js/bootstrap.js' type="text/javascript"></script>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<script>
+
+function jss(ob){
+	return JSON.stringify(ob,null,2);
+}
+	
+function status(msg){
+	var s = $("#status").val();
+	s = "\n" + msg;
+	$("#status").val(s);
+}
+
+function doit(){
+	var arec = {
+		attributes:[],
+	   meetingNumericId : $("#mtgid").val(),
+	   meetingPasscode : ""
+	};	
+	alert("value: " + $("#mtgid").val() );
+	var url = "/v1/services/aggregator/meeting?pairing=none&allowGeoLocation=true";
+	
+	
+	$.ajax( {
+	url: "https://api.bluejeans.com" + url,
+	type: 'POST',
+	data: JSON.stringify(arec),
+	dataType : 'json',
+	beforeSend : (x)=> {
+		x.setRequestHeader('Content-type' , "application/json");
+		x.setRequestHeader('Accept' , "application/json");
+	}
+	}).done( (data) => {
+	status("Deleted OAuth link between BlueJeans and Slack for: " + userid);
+	}).fail( (error) => {
+	status("Error breaking link: " + jss(error));
+	});
+	
+}
+</script>
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+		<div class="col-xs-12 col-sm-6">
+			Enter Meeting ID:
+		</div>
+		  <div class="col-xs-12 col-sm-6">
+			<div class="input-group">
+			  <input id="mtgid" name="meetingNumericId"  type="text" class="form-control" placeholder="Meeting ID">
+			  <input name="meetingPasscode" type="hidden" value="">
+			  <span class="input-group-btn">
+				<button class="btn btn-default" type="button" onclick="doit()">Go!</button>
+			  </span>
+			</div><!-- /input-group -->
+		  </div><!-- /.col-lg-6 -->
+	</div>
+	<div class="row">
+		<div class="col-xs-12 col-sm-6">
+			<textarea id="status">
+			</textarea>		
+		</div>
+</div>
+</body>
+</html>
